@@ -1,0 +1,41 @@
+body{
+    font-family: $font-style;
+    background-color: $bg-main;
+}
+
+// set font
+.arabic-font{
+    font-family: $font-arabic;
+}
+
+// background
+.bg-main-app{
+    background-color: $bg-main !important;
+}
+
+.bg-light-app{
+    background-color: $light !important;
+}
+
+.bg-success-app{
+    background-color: $success;
+}
+
+.bg-warning-app{
+    background-color: $warning;
+}
+
+.bg-muted-app{
+    background-color: $muted;
+}
+
+// card
+.card{
+    border-radius: 10px;
+}
+
+// alert
+.alert-light-app{
+    background-color: $light;
+    color: $dark;
+}
