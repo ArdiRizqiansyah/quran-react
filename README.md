@@ -13,3 +13,6 @@ npm install
 ```bash
 npm run dev
 ```
+
+### Demo APP
+[https://al-quran-terjemahan-indonesia.vercel.app/](https://al-quran-terjemahan-indonesia.vercel.app/)
