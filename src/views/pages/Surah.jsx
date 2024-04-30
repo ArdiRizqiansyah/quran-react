@@ -2,6 +2,8 @@ import Main from "@layouts/Main";
 import { Card, CardBody, Col, Container, Row } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
 import useFetch from "../../hooks/useFetch";
+import useSound from "use-sound";
+import { useState } from "react";
 
 
 export default function Surah() {
@@ -17,6 +19,31 @@ export default function Surah() {
     // get all data surah
     const { data: allSurah } = useFetch(`${import.meta.env.VITE_API_URL}/surat`);
 
+    // function play audio
+    const PlayButton = ({ sound }) => {
+        const [play, { pause }] = useSound(sound, {
+            onplay: () => setIsPlaying(true),
+            onend: () => setIsPlaying(false),
+        });
+
+        const [isPlaying, setIsPlaying] = useState(false);
+
+        const togglePlay = () => {
+            if (isPlaying) {
+                pause();
+            } else {
+                play();
+            }
+            setIsPlaying(!isPlaying);
+        };
+
+        return (
+            <span className="cursor-pointer" onClick={togglePlay}>
+                {isPlaying ? (<i className="bi bi-pause-circle"></i>) : (<i className="bi bi-play-circle"></i>)}
+            </span>
+        )
+    };
+
     return (
         <Main>
             <section className="bg-light min-vh-100">
@@ -26,27 +53,33 @@ export default function Surah() {
                             <Card className="bg-main-app mb-3">
                                 <CardBody>
                                     <h6>Surah</h6>
-                                    <div className="d-flex align-items-center text-muted bg-muted-app py-1 px-3 gap-2 rounded-3 mb-3">
-                                        <p className="mb-0">
-                                            {surah.nomor}
-                                        </p>
-                                        <p className="mb-0">
-                                            {surah.namaLatin}
-                                        </p>
-                                        <p className="mb-0 ms-auto arabic-font">
-                                            {surah.nama}
-                                        </p>
-                                    </div>
+                                    { surah &&
+                                        <div className="d-flex align-items-center text-muted bg-muted-app py-1 px-3 gap-2 rounded-3 mb-3">
+                                            <p className="mb-0">
+                                                {surah.nomor}
+                                            </p>
+                                            <p className="mb-0">
+                                                {surah.namaLatin}
+                                            </p>
+                                            <p className="mb-0 ms-auto arabic-font">
+                                                {surah.nama}
+                                            </p>
+                                        </div>
+                                    }
                                     <div className="d-flex text-muted justify-content-center align-items-center gap-3">
-                                        <span>
-                                            <i className="bi bi-caret-left"></i>
-                                        </span>
-                                        <span>
-                                            <i className="bi bi-play-circle"></i>
-                                        </span>
-                                        <span>
-                                            <i className="bi bi-caret-right"></i>
-                                        </span>
+                                        { surah.suratSebelumnya &&
+                                            <Link to={`/surah/${surah.suratSebelumnya.nomor}`} className="text-muted">
+                                                <i className="bi bi-caret-left"></i>
+                                            </Link>
+                                        }
+                                        { surah.audioFull &&
+                                            <PlayButton sound={surah.audioFull["01"]} />
+                                        }
+                                        { surah.suratSelanjutnya &&
+                                            <Link to={`/surah/${surah.suratSelanjutnya.nomor}`} className="text-muted">
+                                                <i className="bi bi-caret-right"></i>
+                                            </Link>
+                                        }
                                     </div>
                                 </CardBody>
                             </Card>
@@ -56,7 +89,7 @@ export default function Surah() {
                                         Pilih Surah
                                     </p>
                                     <div className="d-flex flex-column gap-2">
-                                        {allSurah.map((item, index) => (
+                                        {allSurah && allSurah.map((item, index) => (
                                             <Link key={index} to={`/surah/${item.nomor}`} className="text-decoration-none">
                                                 <div className={`d-flex justify-content-between align-items-center text-muted py-1 px-3 rounded-3 ${item.nomor == surah.nomor ? 'bg-muted-app': ''}`}>
                                                     <p className="mb-0">
@@ -84,12 +117,10 @@ export default function Surah() {
                                                 <span className="text-nowrap">
                                                     {surah.nomor} : {item.nomorAyat}
                                                 </span>
-                                                <span>
-                                                    <i className="bi bi-play"></i>
-                                                </span>
-                                                <span>
+                                                <PlayButton sound={item.audio["01"]} />
+                                                {/* <span>
                                                     <i className="bi bi-bookmarks"></i>
-                                                </span>
+                                                </span> */}
                                             </div>
                                             <div className="flex-grow-1 px-3">
                                                 <p className="text-end text-xl mb-3 arabic-font">
